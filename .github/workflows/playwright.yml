@@ -32,8 +32,8 @@ jobs:
       - name: Run Playwright tests
         env:
           URL: ${{ secrets.URL }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          TEST_USERNAME: ${{ secrets.USERNAME }}
+          TEST_PASSWORD: ${{ secrets.PASSWORD }}
         run: npx playwright test
 
       - uses: actions/upload-artifact@v4
