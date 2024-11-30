@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { LoginPage } from '../pages/login-page'
 import { faker } from '@faker-js/faker/locale/ar'
+import { TEST_PASSWORD, TEST_USERNAME } from '../../config/env-data'
 
 let authPage: LoginPage
 let signInUrl = 'https://fe-delivery.tallinn-learning.ee/signin'
