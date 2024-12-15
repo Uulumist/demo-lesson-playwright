@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test'
 import { LoginPage } from '../pages/login-page'
 import { faker } from '@faker-js/faker/locale/ar'
 import { TEST_PASSWORD, TEST_USERNAME } from '../../config/env-data'
+import { OrderFoundPage } from '../pages/order-found-page'
+import { OrderNotFoundPage } from '../pages/order-not-found-page'
 
 let authPage: LoginPage
 let signInUrl = 'https://fe-delivery.tallinn-learning.ee/signin'
@@ -37,10 +39,10 @@ test.describe('Login and order creation tests', () => {
   test('login and create order', async ({}) => {
     const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
     await orderCreationPage.orderCreatorName.fill(faker.lorem.word(2))
-    await orderCreationPage.orderCreatorPhone.fill(faker.lorem.lines(6))
+    await orderCreationPage.orderCreatorPhone.fill(faker.lorem.word(6))
     await orderCreationPage.orderCreatorComment.fill(faker.lorem.word(6))
     await orderCreationPage.createOrderButton.click()
-    expect.soft(orderCreationPage.createOrderPopupButton).toBeVisible()
+    expect.soft(orderCreationPage.createPopupButton).toBeVisible()
   })
 
   test('error message on name invalid input', async ({}) => {
@@ -52,7 +54,7 @@ test.describe('Login and order creation tests', () => {
   test('error message on phone invalid input', async ({}) => {
     const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
     await orderCreationPage.orderCreatorName.fill(faker.lorem.word(2))
-    await orderCreationPage.orderCreatorPhone.fill('asdsd')
+    await orderCreationPage.orderCreatorPhone.fill(faker.lorem.word(5))
     expect.soft(orderCreationPage.phoneInputError).toBeVisible()
   })
 
@@ -60,5 +62,25 @@ test.describe('Login and order creation tests', () => {
     const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
     await orderCreationPage.logoutButton.click()
     await expect(page).toHaveURL(signInUrl)
+  })
+
+  test('login and check existing order status', async ({ page }) => {
+    const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
+    await orderCreationPage.statusButton.click()
+    await orderCreationPage.searchPopupInput.fill('2694')
+    await orderCreationPage.searchPopupSubmitButton.click()
+    const orderFoundPage = new OrderFoundPage(page)
+    await expect(orderFoundPage.uselessField).toBeVisible()
+  })
+
+  test('login and check not existing order status', async ({ page }) => {
+    const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
+    await orderCreationPage.statusButton.click()
+    await orderCreationPage.searchPopupInput.fill('0')
+    await orderCreationPage.searchPopupSubmitButton.click()
+    const orderNotFoundPage = new OrderNotFoundPage(page)
+    await expect(orderNotFoundPage.notFoundTitle).toBeVisible()
+    await expect(orderNotFoundPage.logoutButton).toBeVisible()
+    await expect(orderNotFoundPage.notFoundDescription).toBeVisible()
   })
 })
