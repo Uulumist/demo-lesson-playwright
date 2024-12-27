@@ -52,7 +52,7 @@ test.describe('Login and order creation tests', () => {
   test('error message on phone invalid input', async ({}) => {
     const orderCreationPage = await authPage.signIn(TEST_USERNAME, TEST_PASSWORD)
     await orderCreationPage.orderCreatorName.fill(faker.lorem.word(2))
-    await orderCreationPage.orderCreatorPhone.fill('asdsd')
+    await orderCreationPage.orderCreatorPhone.fill('asds')
     expect.soft(orderCreationPage.phoneInputError).toBeVisible()
   })
 
